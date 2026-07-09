@@ -20,6 +20,22 @@ async def root(request: Request, v: str | None = None) -> FileResponse | Redirec
         return RedirectResponse(f"/{v}")
     return FileResponse("html/index.html", media_type="text/html")
 
+@app.get("/watch")
+async def watch_catch(request: Request, v: str) -> RedirectResponse:
+    return RedirectResponse(f"/{v}")
+
+@app.get("/watch/{id}")
+async def watch_catch_byid(request: Request) -> RedirectResponse:
+    return RedirectResponse(f"/{id}")
+
+@app.get("/v/watch/")
+async def watch_catch_v_byid(request: Request, v: str) -> RedirectResponse:
+    return RedirectResponse(f"/v/{v}")
+
+@app.get("/v/watch/{id}")
+async def watch_catch_v(request: Request) -> RedirectResponse:
+    return RedirectResponse(f"/v/{id}")
+
 @app.get("/v/{id}")
 async def video(id: str, request: Request) -> FileResponse | HTMLResponse | RedirectResponse:
     agent = request.headers.get("user-agent", "").lower()
