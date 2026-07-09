@@ -1,4 +1,4 @@
-from starlette.responses import HTMLResponse
+from starlette.responses import HTMLResponse, RedirectResponse
 import uvicorn
 
 from fastapi import FastAPI, Request
@@ -15,30 +15,61 @@ app = FastAPI(
 )
 
 @app.get("/")
-async def root() -> FileResponse:
+async def root(request: Request, v: str | None = None) -> FileResponse | RedirectResponse:
+    if v:
+        return RedirectResponse(f"/{v}")
     return FileResponse("html/index.html", media_type="text/html")
 
 @app.get("/v/{id}")
-async def video(id: str, request: Request) -> FileResponse | HTMLResponse:
+async def video(id: str, request: Request) -> FileResponse | HTMLResponse | RedirectResponse:
     agent = request.headers.get("user-agent", "").lower()
 
     if "discord" in agent:
-        return FileResponse(..., media_type="video/mp4")
+        return RedirectResponse(f"/video/{id}")
     elif "slack" in agent:
-        return FileResponse(..., media_type="text/html")
+        return HTMLResponse(
+            """
+            <html><head>
+              <meta property="og:title" content="...">
+              <meta property="og:type" content="music.song">
+              <meta property="og:video" content="https://yt.qwik.top/video/{id}">
+              <meta property="og:video:type" content="video/mp4">
+            </head></html>
+            """
+        )
     else:
-        return HTMLResponse(...)
+        return FileResponse(..., media_type="text/html")
 
 @app.get("/{id}")
-async def audio(id: str, request: Request) -> FileResponse | HTMLResponse:
+async def audio(id: str, request: Request) -> FileResponse | HTMLResponse | RedirectResponse:
     agent = request.headers.get("user-agent", "").lower()
 
     if "discord" in agent:
-        return FileResponse(..., media_type="audio/mpeg")
+        return RedirectResponse(f"/audio/{id}")
     elif "slack" in agent:
-        return FileResponse(..., media_type="text/html")
+        return HTMLResponse(
+            """
+            <html><head>
+              <meta property="og:title" content="...">
+              <meta property="og:type" content="music.song">
+              <meta property="og:audio" content="https://yt.qwik.top/audio/{id}">
+              <meta property="og:audio:type" content="audio/mpeg">
+            </head></html>
+            """
+        )
     else:
-        return HTMLResponse(...)
+        # generic? how to do templates
+        return FileResponse(..., media_type="text/html")
+
+@app.get("/video/{id}")
+async def get_video(id: str) -> FileResponse:
+    ...
+    return FileResponse(..., media_type="video/mp4")
+
+@app.get("/audio/{id}")
+async def get_audio(id: str) -> FileResponse:
+    ...
+    return FileResponse(..., media_type="audio/mpeg")
 
 def entry():
     config = get_config()
