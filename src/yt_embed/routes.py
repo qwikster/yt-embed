@@ -1,6 +1,7 @@
-from fastapi import APIRouter, FastAPI, Request
+from fastapi import APIRouter, Request
 from fastapi.responses import FileResponse, Response, HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+from yt_embed.db import DBDep
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -74,11 +75,11 @@ async def audio(id: str, request: Request) -> Response:
         return templates.TemplateResponse(request, "audio.html", {"id": id})
 
 @router.get("/video/{id}")
-async def get_video(id: str) -> FileResponse:
+async def get_video(id: str, db: DBDep) -> FileResponse:
     ...
     return FileResponse(..., media_type="video/mp4")
 
 @router.get("/audio/{id}")
-async def get_audio(id: str) -> FileResponse:
+async def get_audio(id: str, db: DBDep) -> FileResponse:
     ...
     return FileResponse(..., media_type="audio/mpeg")
