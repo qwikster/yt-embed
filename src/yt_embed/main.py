@@ -7,6 +7,7 @@ from importlib.metadata import version
 from fastapi.staticfiles import StaticFiles
 from yt_embed.config import get_config
 from yt_embed.routes import router
+from yt_embed.models import Item
 from yt_embed.db import Base, engine
 
 @asynccontextmanager
