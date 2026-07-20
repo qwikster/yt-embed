@@ -5,7 +5,7 @@ class Settings(BaseSettings):
     base_url: str = "yt.qwik.top"
     db_url: str = "sqlite+aiosqlite:///yt-embed.db"
     cache_dir: str = "cache"
-    ytdlp: str = "ytdlp"
+    ytdlp: str = "yt-dlp"
 
     host: str = "0.0.0.0"
     port: int = 12864

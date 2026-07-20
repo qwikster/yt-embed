@@ -3,7 +3,6 @@ from fastapi import Depends
 from datetime import datetime, timezone
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.orm import DeclarativeBase
-from yt_embed.models import Item
 
 from yt_embed.config import get_config
 
@@ -22,7 +21,7 @@ async def get_db():
         yield session
 
 async def is_expired(item, db) -> bool:
-    diff = datetime.now(timezone.utc) - item.cached_at
+    diff = datetime.now(timezone.utc) - item.cached_at.replace(tzinfo=timezone.utc)
     if diff.total_seconds() / 3600 >= config.expiry_time:
         db.delete(item)
         await db.commit()
